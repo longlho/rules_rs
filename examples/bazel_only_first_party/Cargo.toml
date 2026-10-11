@@ -1,6 +1,15 @@
+[package]
+name = "example-deps"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
 [workspace]
-members = ["tools/deps"]
 resolver = "3"
 
 [workspace.dependencies]
 anyhow = "1.0.102"
+
+# Cargo resolves only dependencies actually requested by a package.
+[dependencies]
+anyhow.workspace = true
