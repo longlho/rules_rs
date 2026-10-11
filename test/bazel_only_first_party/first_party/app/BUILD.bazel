@@ -1,0 +1,10 @@
+load("@rules_rs//rs:rust_library.bzl", "rust_library")
+
+rust_library(
+    name = "app",
+    srcs = ["lib.rs"],
+    crate_name = "app",
+    edition = "2024",
+    deps = ["//bazel_only_first_party/first_party/logging"],
+    visibility = ["//visibility:public"],
+)

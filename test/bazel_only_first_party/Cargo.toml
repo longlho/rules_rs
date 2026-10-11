@@ -1,0 +1,11 @@
+[package]
+name = "bazel_only_first_party_resolver"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# This package exists only to give crate.from_cargo a Cargo dependency closure.
+# The first_party target below intentionally has no Cargo.toml; it uses the
+# generated @bazel_only_first_party labels directly from BUILD.bazel.
+[dependencies]
+anyhow = "1.0.102"

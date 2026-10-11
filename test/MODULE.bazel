@@ -138,6 +138,7 @@ TESTS = [
     "workspace_renamed_path_dep_aliases",
     "binaries",
     "binary_only",
+    "bazel_only_first_party",
     "uv",
 ]
 
