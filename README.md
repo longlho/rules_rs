@@ -22,6 +22,10 @@ bazel_dep(name = "rules_rs", version = "0.0.33")
 
 This is the default setup for new users. It provisions the patched `rules_rust`, registers `rules_rs` Rust toolchains, sets explicit host platforms, and resolves Cargo dependencies against `rules_rs` platforms.
 
+For an app and multiple first-party libraries defined entirely by Bazel, see the
+[standalone example](examples/bazel_only_first_party). It uses one Cargo resolver
+package for external dependencies and explicit Bazel labels for first-party code.
+
 ### `MODULE.bazel`
 
 ```bzl

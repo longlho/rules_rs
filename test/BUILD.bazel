@@ -438,7 +438,6 @@ filegroup(
         "//self_dev_dependency/mycrate",
         "@binaries//:protoc-gen-prost-extra",
         "@binaries//:protoc-gen-prost__protoc-gen-prost",
-        "//bazel_only_first_party/first_party/app",
         "@binary_only//:b3sum__b3sum",
         "@build_script_aliases//:workspace_cargo_lints",
         "@root_package//:_workspace_deps",

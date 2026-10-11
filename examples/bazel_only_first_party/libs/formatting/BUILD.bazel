@@ -1,10 +1,8 @@
 load("@rules_rs//rs:rust_library.bzl", "rust_library")
 
 rust_library(
-    name = "logging",
+    name = "formatting",
     srcs = ["lib.rs"],
-    crate_name = "logging",
     edition = "2024",
-    deps = ["@bazel_only_first_party//:anyhow"],
     visibility = ["//visibility:public"],
 )
