@@ -368,7 +368,7 @@ crate.annotation(
             hub_name = hub_name,
             crate_visibility = visibility_with_internal_access(annotation.visibility, internal_packages),
             gen_build_script = annotation.gen_build_script,
-            build_script_deps = [],
+            build_script_deps = annotation.build_script_deps,
             build_script_deps_select = _select(feature_resolutions.build_deps),
             build_script_data = annotation.build_script_data,
             build_script_data_select = annotation.build_script_data_select,
@@ -1026,9 +1026,9 @@ _annotation = tag_class(
         # "build_script_data_glob": attr.string_list(
         #     doc = "A list of glob patterns to add to a crate's `cargo_build_script::data` attribute",
         # ),
-        # "build_script_deps": attr.label_list(
-        #     doc = "A list of labels to add to a crate's `cargo_build_script::deps` attribute.",
-        # ),
+        "build_script_deps": attr.label_list(
+            doc = "A list of labels to add to a crate's `cargo_build_script::deps` attribute.",
+        ),
         "build_script_env_files": attr.label_list(
             doc = "Files containing additional environment variables for a crate's `cargo_build_script`.",
             allow_files = True,

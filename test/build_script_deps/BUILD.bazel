@@ -1,0 +1,17 @@
+load("@rules_rs//rs:rust_library.bzl", "rust_library")
+load("@rules_rs//rs:rust_test.bzl", "rust_test")
+
+rust_library(
+    name = "build_helper",
+    srcs = ["build_helper.rs"],
+    edition = "2021",
+    visibility = ["//visibility:public"],
+)
+
+rust_test(
+    name = "build_script_deps_test",
+    size = "small",
+    srcs = ["build_script_deps_test.rs"],
+    edition = "2021",
+    deps = ["@build_script_deps//:configured-build-script"],
+)
