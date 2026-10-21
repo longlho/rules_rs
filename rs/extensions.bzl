@@ -175,6 +175,7 @@ def _generate_hub_and_spokes(
     )
     packages = split_packages.packages
     workspace_members = split_packages.workspace_members
+    watch_manifests = cargo_lock_path.repo_name == ""
 
     mctx.report_progress("Computing dependencies and features")
 
@@ -237,9 +238,9 @@ def _generate_hub_and_spokes(
             # Path dependencies are local, and Cargo.toml can change features or
             # dependencies without changing Cargo.lock, causing stale resolution.
             # Do not return path dependency facts for storage in MODULE.bazel.lock.
-            # Watch Cargo.toml so Bazel re-runs the extension when Cargo.toml changes.
             cargo_toml_path = paths.join(package["local_path"], "Cargo.toml")
-            mctx.watch(mctx.path(cargo_toml_path))
+            if watch_manifests:
+                mctx.watch(mctx.path(cargo_toml_path))
             annotation = annotation_for(annotations, name, package["version"], hub_name)
             cargo_toml_json = run_toml2json(mctx, cargo_toml_path)
             fact = cargo_toml_fact(cargo_toml_json, {})
@@ -282,9 +283,6 @@ def _generate_hub_and_spokes(
     resolved_facts = resolve_package_facts(packages, facts_by_fq_crate, platform_triples)
     feature_resolutions_by_fq_crate = resolved_facts.feature_resolutions_by_fq_crate
     versions_by_name = resolved_facts.versions_by_name
-
-    # Only files in the current Bazel workspace can/should be watched, so check where our manifests are located.
-    watch_manifests = cargo_lock_path.repo_name == ""
 
     workspace_resolution = resolve_cargo_workspace_members(
         mctx,
