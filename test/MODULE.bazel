@@ -107,6 +107,7 @@ TESTS = [
     # "annotation_crate_features",
     "bindgen",
     "build_script_aliases",
+    "build_script_deps",
     "build_script_env_select",
     "build_script_runtime_env",
     "build_dep_features",
@@ -163,6 +164,12 @@ TESTS = [
 ]
 
 [use_repo(crate, test) for test in TESTS]
+
+crate.annotation(
+    crate = "configured-build-script",
+    build_script_deps = ["//build_script_deps:build_helper"],
+    repositories = ["build_script_deps"],
+)
 
 # Workspace member whose Cargo.toml lives at the bazel workspace root.
 crate.from_cargo(

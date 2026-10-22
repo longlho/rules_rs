@@ -1,0 +1,10 @@
+version = 4
+
+[[package]]
+name = "build-script-deps-consumer"
+version = "0.1.0"
+dependencies = ["configured-build-script"]
+
+[[package]]
+name = "configured-build-script"
+version = "0.1.0"

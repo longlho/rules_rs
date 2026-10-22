@@ -1,0 +1,11 @@
+[package]
+name = "build-script-deps-consumer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+configured-build-script = { path = "vendor/configured-build-script" }
+
+[workspace]
+exclude = ["vendor/configured-build-script"]
+resolver = "2"
