@@ -1,0 +1,12 @@
+load("@rules_rs//rs:rust_library.bzl", "rust_library")
+
+rust_library(
+    name = "service",
+    srcs = ["lib.rs"],
+    edition = "2024",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//libs/config",
+        "//libs/formatting",
+    ],
+)
