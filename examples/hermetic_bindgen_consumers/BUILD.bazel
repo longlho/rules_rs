@@ -1,0 +1,26 @@
+load("@rules_rs//rs:rust_library.bzl", "rust_library")
+load("@rules_rs//rs:rust_test.bzl", "rust_test")
+
+platform(
+    name = "linux_host",
+    constraint_values = ["@llvm//constraints/libc:gnu.2.28"],
+    parents = ["@platforms//host"],
+)
+
+rust_test(
+    name = "aic_runtime_test",
+    srcs = ["aic_runtime_test.rs"],
+    deps = ["@crates//:aic-sdk-sys"],
+)
+
+rust_library(
+    name = "aic_compile",
+    srcs = ["aic_compile.rs"],
+    deps = ["@crates//:aic-sdk-sys"],
+)
+
+rust_library(
+    name = "netstat_compile",
+    srcs = ["netstat_compile.rs"],
+    deps = ["@crates//:netstat2"],
+)

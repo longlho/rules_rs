@@ -1,0 +1,60 @@
+module(name = "hermetic_bindgen_consumers")
+
+bazel_dep(name = "rules_rs", version = "0.0.0")
+local_path_override(
+    module_name = "rules_rs",
+    path = "../..",
+)
+
+bazel_dep(name = "llvm", version = "0.8.24")
+bazel_dep(name = "platforms", version = "1.1.0")
+
+register_toolchains("@llvm//toolchain:all")
+
+rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
+use_repo(rules_rust, "rules_rust")
+
+toolchains = use_extension("@rules_rs//rs/toolchains:module_extension.bzl", "toolchains")
+toolchains.toolchain(
+    edition = "2024",
+    version = "1.97.1",
+)
+use_repo(toolchains, "default_rust_toolchains")
+
+register_toolchains("@default_rust_toolchains//...")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lock = "//:Cargo.lock",
+    cargo_toml = "//:Cargo.toml",
+    platform_triples = [
+        "aarch64-apple-darwin",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "x86_64-unknown-linux-gnu",
+    ],
+)
+use_repo(crate, "crates")
+
+# Deliberately forbid ambient libclang in both variants.
+crate.annotation_select(
+    build_script_env = {"LIBCLANG_PATH": "/rules-rs-repro/no-libclang"},
+    crate = "aic-sdk-sys",
+    triples = [
+        "aarch64-apple-darwin",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "x86_64-unknown-linux-gnu",
+    ],
+)
+crate.annotation_select(
+    build_script_env = {"LIBCLANG_PATH": "/rules-rs-repro/no-libclang"},
+    crate = "netstat2",
+    triples = [
+        "aarch64-apple-darwin",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "x86_64-unknown-linux-gnu",
+    ],
+)

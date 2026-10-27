@@ -1,0 +1,5 @@
+"""Keep binding generation separate from the Cargo build script."""
+
+load("@rules_rs//3rd_party/aic-sdk-sys:defs.bzl", "aic_sdk_bindings")
+
+aic_sdk_bindings(name = "aic_bindings", header = "include/aic.h")

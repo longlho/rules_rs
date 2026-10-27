@@ -1,0 +1,10 @@
+"""Exercise the patched crate source without loading host libclang."""
+
+load("@rules_rs//rs:rust_test.bzl", "rust_test")
+
+rust_test(
+    name = "runtime_generator_test",
+    srcs = ["aic_bindings.rs", "runtime_generator_test.rs", "runtime_linking.rs"],
+    crate_root = "runtime_generator_test.rs",
+    deps = ["@crates//:bindgen", "@crates//:quote", "@crates//:syn"],
+)

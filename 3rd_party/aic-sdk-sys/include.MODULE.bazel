@@ -1,0 +1,25 @@
+rules_rust_bindgen = use_extension("@rules_rs//rs:rules_rust_bindgen.bzl", "rules_rust_bindgen")
+rules_rust_bindgen.toolchain(name = "aic_rules_rust_bindgen")
+use_repo(rules_rust_bindgen, "aic_rules_rust_bindgen")
+
+register_toolchains("@aic_rules_rust_bindgen//:all")
+
+# Configure AIC_LIB_PATH separately for the native SDK library; this replaces
+# only binding generation, preserving the crate's native linking features.
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    additive_build_file = "@rules_rs//3rd_party/aic-sdk-sys:additive.BUILD.bazel",
+    build_script_data = [
+        "@crates//:aic_bindings",
+    ],
+    build_script_env = {
+        "AIC_BINDINGS_RS": "$(execpath @crates//:aic_bindings)",
+    },
+    crate = "aic-sdk-sys",
+    extra_aliased_targets = {
+        "aic_bindings": "aic_bindings",
+    },
+    gen_build_script = "on",
+    patch_args = ["-p1"],
+    patches = ["@rules_rs//3rd_party/aic-sdk-sys:precomputed-bindings.patch"],
+)

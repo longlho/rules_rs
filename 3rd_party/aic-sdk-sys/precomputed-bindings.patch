@@ -1,0 +1,78 @@
+diff --git a/build-utils/runtime_linking.rs b/build-utils/runtime_linking.rs
+index 33e4049..676e5ae 100644
+--- a/build-utils/runtime_linking.rs
++++ b/build-utils/runtime_linking.rs
+@@ -5,24 +5,30 @@ use syn::{FnArg, ForeignItem, Item, Pat, PathArguments, ReturnType, Type};
+
+ pub fn generate(bindings: &bindgen::Bindings, out_path: &Path) {
+     let source = bindings_to_string(bindings);
+-    let syntax = syn::parse_file(&source).expect("failed to parse generated bindings");
++    generate_from_source(&source, out_path);
++}
++
++pub fn generate_from_source(source: &str, out_path: &Path) -> String {
++    let mut syntax = syn::parse_file(source).expect("failed to parse generated bindings");
+
+     let mut declarations = Vec::new();
+-    for item in syntax.items {
++    for item in &mut syntax.items {
+         let Item::ForeignMod(foreign_mod) = item else {
+             continue;
+         };
+
+-        for item in foreign_mod.items {
++        foreign_mod.items.retain(|item| {
+             let ForeignItem::Fn(function) = item else {
+-                continue;
++                return true;
+             };
+
+             let name = function.sig.ident.to_string();
+             if name.starts_with("aic_") {
+-                declarations.push(render_symbol_declaration(&function));
++                declarations.push(render_symbol_declaration(function));
++                return false;
+             }
+-        }
++            true
++        });
+     }
+
+     assert!(
+@@ -43,6 +49,9 @@ pub fn generate(bindings: &bindgen::Bindings, out_path: &Path) {
+     output.push_str("}\n");
+
+     fs::write(out_path, output).expect("failed to write runtime-linking symbols");
++
++    // Runtime-loaded functions must not also be declared as link-time symbols.
++    syntax.into_token_stream().to_string()
+ }
+
+ fn bindings_to_string(bindings: &bindgen::Bindings) -> String {
+diff --git a/build.rs b/build.rs
+index 87222d1..b6d6aed 100644
+--- a/build.rs
++++ b/build.rs
+@@ -171,6 +171,22 @@ fn generate_bindings() {
+     let header_path = manifest_dir.join("include").join("aic.h");
+     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
++    // Hermetic build systems may generate bindings with their own toolchain.
++    if let Some(bindings_path) = env::var_os("AIC_BINDINGS_RS") {
++        let source = std::fs::read_to_string(bindings_path)
++            .expect("Unable to read precomputed AIC bindings");
++        let bindings = if env::var("CARGO_FEATURE_RUNTIME_LINKING").is_ok() {
++            runtime_linking::generate_from_source(&source, &out_path.join("runtime_symbols.rs"))
++        } else {
++            source
++        };
++        // Do not inherit read-only permissions from build-system inputs: Cargo
++        // may rerun this script with the same OUT_DIR.
++        std::fs::write(out_path.join("bindings.rs"), bindings)
++            .expect("Unable to write AIC bindings");
++        return;
++    }
++
+     // Generate bindings using bindgen
+     let mut builder = bindgen::Builder::default()
+         // The input header we would like to generate bindings for.

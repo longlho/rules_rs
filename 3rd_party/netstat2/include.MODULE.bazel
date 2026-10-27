@@ -1,0 +1,24 @@
+rules_rust_bindgen = use_extension("@rules_rs//rs:rules_rust_bindgen.bzl", "rules_rust_bindgen")
+rules_rust_bindgen.toolchain(name = "netstat2_rules_rust_bindgen")
+use_repo(rules_rust_bindgen, "netstat2_rules_rust_bindgen")
+
+register_toolchains("@netstat2_rules_rust_bindgen//:all")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.annotation(
+    additive_build_file = "@rules_rs//3rd_party/netstat2:additive.BUILD.bazel",
+    crate = "netstat2",
+    extra_aliased_targets = {"netstat2_build_info": "netstat2_build_info"},
+    gen_build_script = "off",
+)
+crate.annotation_select(
+    crate = "netstat2",
+    triples = [
+        "aarch64-apple-darwin",
+        "x86_64-apple-darwin",
+        "aarch64-apple-ios",
+        "aarch64-apple-ios-sim",
+        "x86_64-apple-ios",
+    ],
+    deps = ["@crates//:netstat2_build_info"],
+)

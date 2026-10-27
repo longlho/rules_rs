@@ -1,0 +1,5 @@
+"""Supply cached Apple bindings in place of the Cargo build script."""
+
+load("@rules_rs//3rd_party/netstat2:defs.bzl", "netstat2_bindings")
+
+netstat2_bindings(name = "netstat2_build_info")
